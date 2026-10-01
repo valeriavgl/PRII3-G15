@@ -5,8 +5,8 @@ from std_srvs.srv import Trigger
 from turtlesim.srv import SetPen
 import time
 
-#from .numero_1 import obtener_trazos_uno
-#from .numero_5 import obtener_trazos_cinco
+from .number_one import get_moves_for_one
+#from number_five import get_moves_for_five
 
 class ControladorTortugaG15(Node):
     def __init__(self):
@@ -14,15 +14,15 @@ class ControladorTortugaG15(Node):
         self.publicador_velocidad = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
         self.servicio_control = self.create_service(Trigger, 'pausar_reanudar_dibujo', self.cb_servicio_control)
         self.cliente_lapiz = self.create_client(SetPen, '/turtle1/set_pen')
+        while not self.cliente_lapiz.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Esperando a que la tortuga despierte...')
         self.lapiz_levantado = False
-        self.timer = self.create_timer(0.1, self.cb_bucle_principal)
+        self.timer = self.create_timer(0.01, self.cb_bucle_principal)
         self.en_pausa = False
-        self.trazos = [
-            {"lineal": 2.0, "angular": 0.0, "duracion": 1.0, "levantar_lapiz": False},
-            {"lineal": 0.0, "angular": -1.5, "duracion": 0.5, "levantar_lapiz": True}
-        ]
+        self.trazos = get_moves_for_one()
         self.indice_actual = 0
         self.tiempo_inicio_trazo = None
+        self.instante_pausa = 0.0
 
         self.get_logger().info('Nodo del Grupo 15 iniciado. Tortuga lista para dibujar.')
 
@@ -33,10 +33,13 @@ class ControladorTortugaG15(Node):
             mensaje = "Tortuga pausada..."
             msg_parada = Twist()
             self.publicador_velocidad.publish(msg_parada)
+            
+            self.instante_pausa = time.time()
         else:
             mensaje = "Tortuga reanudada..."
             if self.tiempo_inicio_trazo is not None:
-                self.tiempo_inicio_trazo = time.time()
+                tiempo_detenida = time.time() - self.instante_pausa
+                self.tiempo_inicio_trazo += tiempo_detenida
                 
         self.get_logger().info(mensaje)
         response.success = True
@@ -79,6 +82,8 @@ class ControladorTortugaG15(Node):
             msg.angular.z = float(angular)
             self.publicador_velocidad.publish(msg)
         else:
+            msg_parada = Twist()
+            self.publicador_velocidad.publish(msg_parada)
             self.tiempo_inicio_trazo = None
             self.indice_actual += 1
 
