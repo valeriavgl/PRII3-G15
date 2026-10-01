@@ -1,3 +1,5 @@
+import os
+from glob import glob
 from setuptools import find_packages, setup
 
 package_name = 'g15_prii3_turtlesim'
@@ -10,13 +12,14 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='alexa',
     maintainer_email='avmilvil@epsa.upv.es',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Controlador de Tortuga del Grupo 15',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',
@@ -24,6 +27,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+	        'writer_node = g15_prii3_turtlesim.writer_node:main'
         ],
     },
 )
