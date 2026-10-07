@@ -1,8 +1,8 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from std_srvs.srv import Trigger
-from turtlesim.srv import SetPen
+from std_srvs.srv import Trigger, SetBool, Empty
+from turtlesim.srv import SetPen, TeleportAbsolute
 import time
 
 from .number_one import get_moves_for_one, get_initial_moves
@@ -12,36 +12,82 @@ class ControladorTortugaG15(Node):
     def __init__(self):
         super().__init__('controlador_tortuga_g15')
         self.publicador_velocidad = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
-        self.servicio_control = self.create_service(Trigger, 'pausar_reanudar_dibujo', self.cb_servicio_control)
+        
+        # --- SERVICIOS SOLICITADOS ---
+        self.servicio_marcha = self.create_service(SetBool, 'control_dibujo', self.cb_servicio_marcha)
+        self.servicio_reiniciar = self.create_service(Trigger, 'reiniciar_dibujo', self.cb_servicio_reiniciar)
         self.cliente_lapiz = self.create_client(SetPen, '/turtle1/set_pen')
+        self.cliente_teleport = self.create_client(TeleportAbsolute, '/turtle1/teleport_absolute')
+        self.cliente_limpiar = self.create_client(Empty, '/clear')
+        
         while not self.cliente_lapiz.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Esperando a que la tortuga despierte...')
+            
         self.lapiz_levantado = False
         self.timer = self.create_timer(0.01, self.cb_bucle_principal)
         self.en_pausa = False
+        
         self.trazos = get_initial_moves() + get_moves_for_one() + get_moves_for_five()
         self.indice_actual = 0
         self.tiempo_inicio_trazo = None
         self.instante_pausa = 0.0
 
-        self.get_logger().info('Nodo del Grupo 15 iniciado. Tortuga lista para dibujar.')
+        self.get_logger().info('Nodo del Grupo 15 iniciado. Estado: Dibujando.')
 
-    def cb_servicio_control(self, request, response):
-        self.en_pausa = not self.en_pausa
+    def cb_servicio_marcha(self, request, response):
+        """Maneja la detención y la reanudación mediante un booleano (True=Reanudar, False=Detener)"""
+        seguir = request.data
         
-        if self.en_pausa:
-            mensaje = "Tortuga pausada..."
+        if not seguir and not self.en_pausa:
+            self.en_pausa = True
             msg_parada = Twist()
             self.publicador_velocidad.publish(msg_parada)
-            
             self.instante_pausa = time.time()
-        else:
-            mensaje = "Tortuga reanudada..."
+            mensaje = "Tortuga DETENIDA por servicio."
+        elif seguir and self.en_pausa:
+            self.en_pausa = False
             if self.tiempo_inicio_trazo is not None:
                 tiempo_detenida = time.time() - self.instante_pausa
                 self.tiempo_inicio_trazo += tiempo_detenida
-                
+            mensaje = "Tortuga REANUDADA por servicio."
+        else:
+            mensaje = f"La tortuga ya estaba en el estado solicitado (En pausa: {self.en_pausa})."
+
         self.get_logger().info(mensaje)
+        response.success = True
+        response.message = mensaje
+        return response
+
+    def cb_servicio_reiniciar(self, request, response):
+        """Maneja el reinicio del dibujo"""
+        msg_parada = Twist()
+        self.publicador_velocidad.publish(msg_parada)
+        
+        req_teleport = TeleportAbsolute.Request()
+        req_teleport.x = 5.544445
+        req_teleport.y = 5.544445
+        req_teleport.theta = 0.0
+        self.cliente_teleport.call_async(req_teleport)
+        req_limpiar = Empty.Request()
+        self.cliente_limpiar.call_async(req_limpiar)
+
+        req_pen = SetPen.Request()
+        req_pen.r, req_pen.g, req_pen.b = 255, 255, 255
+        req_pen.width = 3
+        req_pen.off = 1
+        self.cliente_lapiz.call_async(req_pen)
+        
+        time.sleep(0.5)
+
+        self.en_pausa = False
+        self.indice_actual = 0
+        self.tiempo_inicio_trazo = None
+        self.instante_pausa = 0.0
+        self.lapiz_levantado = True
+        
+        mensaje = "DIBUJO REINICIADO. Comenzando desde el primer trazo."
+        self.get_logger().warn(mensaje)
+        
         response.success = True
         response.message = mensaje
         return response
