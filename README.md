@@ -39,7 +39,6 @@ PRII3-G15/
         ├───g15_prii3_turtlesim
         │       number_five.py
         │       number_one.py
-        │       test_number.py
         │       writer_node.py
         │       __init__.py
         │       
