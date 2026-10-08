@@ -9,7 +9,7 @@ Proyecto RII 3: Robots Inteligentes
 ---
 
 ## Descripción
-Este proyecto consiste en la creación de un paquete en ROS 2 diseñado con el fin de controlar la tortuga del simulador `turtlesim`.El propósito de la simulación es buscar que la tortuga dibuje automáticamente el número "15" en la pantalla.
+El proyecto consiste en la creación de un paquete en ROS 2 diseñado con el fin de controlar la tortuga del simulador `turtlesim`. El propósito de la simulación es buscar que la tortuga dibuje automáticamente el número "15" en la pantalla.
 
 El repositorio está estructurado para funcionar directamente como un Workspace de ROS 2, facilitando su descarga y compilación.
 
@@ -24,7 +24,7 @@ Para ejecutar este proyecto necesitas tener instalado:
 
 ---
 
-## Estructura del Workspace REVISAR CON TREE, Y ACTUALIZARLO (BORRAR EL LOG, INSTALL Y BUILD)
+## Estructura del Workspace
 
 ```text
 PRII3-G15/
@@ -59,7 +59,7 @@ PRII3-G15/
 ## Estructura de Desarrollo 
 El proyecto ha sido dividido de manera modular para evitar conflictos de integración en Git:
 * `writer_node.py`: Administra la lógica de ROS 2 y publica en `cmd_vel`.
-* `number_1.py` y `number_5.py`: Contienen la lógica matemática aislada (cinemática) para los trazos de cada número.
+* `number_one.py` y `number_five.py`: Contienen la lógica matemática aislada (cinemática) para los trazos de cada número.
 
 ## Guía de Instalación y Ejecución
 
@@ -100,7 +100,7 @@ source install/setup.bash
 Luego de estos comandos, se ha preparado un archivo `launch` que levanta simultáneamente el simulador (`turtlesim_node`) y un nodo principal de dibujo (`writer_node`). En la misma terminal donde se realizó el paso anterior, ejecuta:
 
 ```bash
-ros2 launch g15_prii3_turtlesim draw_15.launch.py
+ros2 launch g15_prii3_turtlesim launch.py
 ```
 
 **Resultado esperado:**
@@ -108,9 +108,19 @@ ros2 launch g15_prii3_turtlesim draw_15.launch.py
 2. La terminal mostrará los *logs* (mensajes informativos) indicando el progreso.
 3. La tortuga se moverá trazando el número "1" y, a continuación, el número "5".
 
-**Pausa y reanudación:**
-- Es posible pausar o reanudar la simulación ejecutando el siguiente comando en una nueva terminal:
-    <""> 
+**Pausa, reanudación y reinicio:**
+- Es posible pausar, reanudar y reiniciar la simulación ejecutando los siguientes comandos en una nueva terminal:
+
+```bash
+# Para pausar la simulación
+ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: false}"
+
+# Para reanudar la simulación
+ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: true}"
+
+# Para reiniciar la simulación
+ros2 service call /reiniciar_dibujo std_srvs/srv/Trigger {}
+```
 
 ### 5. Cierre y Detención
 Para detener la ejecución de manera segura:
