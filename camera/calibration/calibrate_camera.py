@@ -3,19 +3,14 @@ import cv2
 import glob
 from pathlib import Path  #usar imag de otra carpeta
 
-# --- CONFIGURACIÓN ---
-# Número de esquinas interiores (columnas, filas) del tablero de ajedrez
-# ¡Cámbialo si tu tablero tiene otras dimensiones!
 PATTERN_SIZE = (13, 9) 
 SQUARE_SIZE = 30.0  
 
-# Rutas de las imágenes y archivo de salida
 BASE_DIR = Path(__file__).resolve().parents[2]
 IMAGES_DIR = BASE_DIR / "imagenes_sprint2"
 OUTPUT_FILE = BASE_DIR / "camera" / "calibration" / "calibracion_camara.yml"
 
 def main():
-    # 1. Preparar puntos del objeto (0,0,0), (1,0,0), (2,0,0) ...
     objp = np.zeros((PATTERN_SIZE[0] * PATTERN_SIZE[1], 3), np.float32)
     objp[:, :2] = np.mgrid[0:PATTERN_SIZE[0], 0:PATTERN_SIZE[1]].T.reshape(-1, 2)
     objp *= SQUARE_SIZE
@@ -23,7 +18,6 @@ def main():
     object_points = []  # Puntos 3D en el mundo real
     image_points = []   # Puntos 2D en la imagen
 
-    # Buscar todas las imágenes .jpg en la carpeta
     image_paths = list(IMAGES_DIR.glob("*.jpg"))
     print(f"Fotografías encontradas en '{IMAGES_DIR}': {len(image_paths)}")
 
@@ -43,7 +37,6 @@ def main():
         if image_size is None:
             image_size = gray.shape[::-1] # (ancho, alto)
 
-        # Buscar las esquinas del tablero de ajedrez
         ret, corners = cv2.findChessboardCorners(
             gray, 
             PATTERN_SIZE, 
@@ -51,7 +44,6 @@ def main():
         )
 
         if ret:
-            # Refinar la posición de las esquinas a nivel sub-píxel para mayor precisión
             criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
             refined_corners = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
             
@@ -68,7 +60,6 @@ def main():
 
     print(f"\nCalculando parámetros de calibración con {accepted} imágenes válidas...")
 
-    # 2. Calcular la calibración de la cámara
     rms, camera_matrix, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
         object_points, 
         image_points, 
@@ -77,7 +68,6 @@ def main():
         None
     )
 
-    # 3. Guardar los resultados en el archivo YAML (.yml) obligatorio para la rúbrica[cite: 2, 17]
     fs = cv2.FileStorage(str(OUTPUT_FILE), cv2.FILE_STORAGE_WRITE)
     if not fs.isOpened():
         print(f"[ERROR] No se pudo crear o abrir el archivo {OUTPUT_FILE}")
@@ -90,7 +80,6 @@ def main():
     fs.write("rms_reprojection_error", float(rms))
     fs.release()
 
-    # 4. Mostrar resultados en consola
     print("\n--- RESULTADO DE CALIBRACIÓN ---")
     print(f"Imágenes válidas: {accepted}/{len(image_paths)}")
     print(f"Resolución de imagen: {image_size[0]} x {image_size[1]}")
