@@ -11,7 +11,7 @@ if imagen_original is None:
     print("Error: No se pudo cargar la imagen.")
     exit()
 
-imagen_rectificada = cv2.undistort(imagen_original, matriz_camara, coeficientes_distorsion, None, matriz_camara)
+imagen_rectificada = cv2.undistort(imagen_original, matriz_camara, coeficientes_distorsion)
 
 alto, ancho = imagen_original.shape[:2]
 cv2.namedWindow("1. Imagen Original", cv2.WINDOW_NORMAL)
