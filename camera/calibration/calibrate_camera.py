@@ -40,7 +40,6 @@ def main():
         if image_size is None:
             image_size = gray.shape[::-1] # (ancho, alto)
 
-        # Buscar las esquinas del tablero de ajedrez
         ret, corners = cv2.findChessboardCorners(
             gray, 
             PATTERN_SIZE, 
