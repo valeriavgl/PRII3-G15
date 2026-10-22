@@ -22,10 +22,10 @@ def main():
 
     # Buscar todas las imag
     image_paths = list(IMAGES_DIR.glob("*.jpg"))
-    print(f"Fotografías encontradas en '{IMAGES_DIR}': {len(image_paths)}")
+    print(f"Fotografias encontradas en '{IMAGES_DIR}': {len(image_paths)}")
 
     if len(image_paths) == 0:
-        print("[ERROR] No se encontraron imágenes. Revisa la ruta.")
+        print("[ERROR] No se encontraron imagenes. Revisa la ruta.")
         return
 
     image_size = None
@@ -64,7 +64,7 @@ def main():
 
     print(f"\nCalculando parametros de calibracion con {accepted} imagenes validas...")
 
-    # Calcular la calibración de la cAmara
+    # Calcular la calibracion
     rms, camera_matrix, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
         object_points, 
         image_points, 
@@ -95,7 +95,7 @@ def main():
     print("\nCoeficientes de distorsion (distCoeffs):")
     print(dist_coeffs)
     print(f"\nError RMS de reproyeccion: {rms:.4f}")
-    print(f"[ÉXITO] Archivo de calibracion guardado en: {OUTPUT_FILE}")
+    print(f"[EXITO] Archivo de calibracion guardado en: {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
