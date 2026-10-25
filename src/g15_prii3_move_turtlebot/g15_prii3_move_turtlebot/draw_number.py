@@ -4,13 +4,13 @@ from geometry_msgs.msg import Twist
 from std_srvs.srv import Trigger, SetBool, Empty
 import time
 
-from .number_one import get_moves_for_one, get_initial_moves
+from .number_one import get_moves_for_one
 from .number_five import get_moves_for_five
 
 class Draw_Number(Node):
     def __init__(self):
         super().__init__('draw_number')
-        self.publicador_velocidad = self.create_publisher(Twist, '/cmd_vel_dibujo', 10)
+        self.publicador_velocidad = self.create_publisher(Twist, '/cmd_vel', 10)
         
         # --- SERVICIOS SOLICITADOS ---
         self.servicio_marcha = self.create_service(SetBool, 'control_dibujo', self.cb_servicio_marcha)
@@ -19,7 +19,7 @@ class Draw_Number(Node):
         self.timer = self.create_timer(0.01, self.cb_bucle_principal)
         self.en_pausa = False
         
-        self.trazos = get_initial_moves() + get_moves_for_one() + get_moves_for_five()
+        self.trazos = get_moves_for_one() + get_moves_for_five()
         self.indice_actual = 0
         self.tiempo_inicio_trazo = None
         self.instante_pausa = 0.0
