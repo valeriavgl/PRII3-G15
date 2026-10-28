@@ -5,7 +5,6 @@ import argparse
 import numpy as np
 
 def main_image():
-    """ Función de prueba para procesar una imagen"""
 
     #Menu de opciones
     parser = argparse.ArgumentParser(description="Basic marker detection")

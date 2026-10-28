@@ -1,0 +1,3 @@
+ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: false}"
+ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: true}"
+ros2 service call /reiniciar_dibujo std_srvs/srv/Trigger {}
