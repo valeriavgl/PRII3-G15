@@ -4,7 +4,7 @@ from geometry_msgs.msg import Twist
 from std_srvs.srv import Trigger, SetBool, Empty
 import time
 
-from .number_one import get_moves_for_one, get_initial_moves
+from .number_one import get_moves_for_one
 from .number_five import get_moves_for_five
 
 class ControladorJetbotG15(Node):
@@ -22,7 +22,7 @@ class ControladorJetbotG15(Node):
         self.timer = self.create_timer(0.1, self.bucle_principal_callback)
         self.en_pausa = False
         
-        self.trazos = get_initial_moves() + get_moves_for_one() + get_moves_for_five()
+        self.trazos =  get_moves_for_one() + get_moves_for_five()
         self.i = 0
         self.tiempo_inicio_trazo = None
         self.instante_pausa = 0.0
