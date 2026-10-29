@@ -9,6 +9,12 @@ def generate_launch_description():
             executable='draw_number_node',
             name='controlador_jetbot_g15',
             output='screen'
+        ),
+        Node(
+            package='g15_prii3_move_jetbot',
+            executable='collision_avoidance',
+            name='collision_avoidance',
+            output='screen'
         )
     ])
 

@@ -10,8 +10,6 @@ from .number_five import get_moves_for_five
 class ControladorJetbotG15(Node):
     def __init__(self):
         super().__init__('controlador_JetBot_g15')
-        #self.publicador_velocidad = self.create_publisher(Twist, '/cmd_vel_drawing', 10)
-        #PROBAR EN GAZEBO
         self.publicador_velocidad = self.create_publisher(Twist, '/cmd_vel', 10)
         
         
