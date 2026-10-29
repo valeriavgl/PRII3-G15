@@ -1,0 +1,8 @@
+# Para pausar la simulación
+ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: false}"
+
+# Para reanudar la simulación
+ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: true}"
+
+# Para reiniciar la simulación
+ros2 service call /reiniciar_dibujo std_srvs/srv/Trigger {}

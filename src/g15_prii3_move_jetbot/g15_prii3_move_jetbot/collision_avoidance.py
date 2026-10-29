@@ -17,7 +17,7 @@ class CollisionAvoidance(Node):
         super().__init__('collision_avoidance')
 
         self.distancia_parada = 0.5   # Distancia mínima permitida (m)
-        self.angulo_frente = 30.0     # grados a cada lado del frente
+        self.angulo_frente = 30 # grados a cada lado del frente
         self.pausado = False          # estado del dibujo que conocemos
         self.llamando = False         # hay una llamada al servicio en curso
 
@@ -30,7 +30,7 @@ class CollisionAvoidance(Node):
         limite = math.radians(self.angulo_frente) #traduccion a radianes
         frente = [] # guardar distancias de objetos detectables
         for i, r in enumerate(msg.ranges): # i rayo, r distancia
-            angulo = msg.angle_min + i * msg.angle_increment # Calcula a qué ángulo corresponde este rayo exacto
+            angulo = msg.angle_min + i * msg.angle_increment + math.pi # Calcula a qué ángulo corresponde este rayo exacto
             #conversion del angulo a coordenadas y luego con el arcotangente limitamos al rango de -180 a 180 grados 
             angulo = math.atan2(math.sin(angulo), math.cos(angulo)) 
             if abs(angulo) <= limite and msg.range_min < r < msg.range_max: # el rayo esta en el perimetro de mi via 
