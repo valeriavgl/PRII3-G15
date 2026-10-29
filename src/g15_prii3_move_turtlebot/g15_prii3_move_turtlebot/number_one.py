@@ -17,6 +17,14 @@
 
 def get_moves_for_one():
     dibujar_1 = [
+        # --- POSICIONAMIENTO INICIAL ---
+        # Avanza 0.5m para salir del punto de aparición
+        {"lineal": 0.2, "angular": 0.0, "duracion": 2.5}, 
+        # Gira 90 grados a la izquierda para mirar hacia arriba
+        {"lineal": 0.0, "angular": 0.5, "duracion": 3.14},
+        # Pausa de 1 segundo (velocidad 0) antes de empezar
+        {"lineal": 0.0, "angular": 0.0, "duracion": 1.0},
+        # --- DIBUJO DEL "1" ---
         # Dibuja el palo vertical del "1" de abajo hacia arriba (1 metro)
         {"lineal": 0.2, "angular": 0.0, "duracion": 5.0}, 
         # Posicionarse para empezar el "5"
