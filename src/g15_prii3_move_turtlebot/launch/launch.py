@@ -11,7 +11,7 @@ def generate_launch_description():
             os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'launch', 'empty_world.launch.py')
         )
     )
-    
+
     dibujo = Node(
         package='g15_prii3_move_turtlebot',
         executable='draw_number',
@@ -19,6 +19,11 @@ def generate_launch_description():
         output='screen'
     )
 
-    return LaunchDescription([gazebo, dibujo])
+    evitar = Node(
+        package='g15_prii3_move_turtlebot',
+        executable='collision_avoidance',
+        name='collision_avoidance',
+        output='screen'
+    )
 
-
+    return LaunchDescription([gazebo, dibujo, evitar])
