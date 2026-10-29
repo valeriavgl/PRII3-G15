@@ -9,3 +9,9 @@ ros2 service call /reiniciar_dibujo std_srvs/srv/Trigger {}
 
 #simulacion fisica 
 ros2 run rviz2 rviz2 -d src/g15\_prii3\_move\_turtlebot/rviz/lidar\_jetbot.rviz
+
+ros2 launch g15_prii3_move_jetbot move_jetbot.launch.py
+
+colcon build --packages-select g15_prii3_move_jetbot
+
+rm -rf build/ install/ log/
