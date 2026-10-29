@@ -20,6 +20,7 @@ def get_moves_for_one():
     dibujar_1 = [
         # Dibuja el palo vertical del "1" de abajo hacia arriba (1 metro)
         {"lineal": 0.2, "angular": 0.0, "duracion": 5.0}, 
+        
         # Posicionarse para empezar el "5"
         # Giro 90 grados a la derecha
         {"lineal": 0.0, "angular": -0.5, "duracion": 3.14}, 
