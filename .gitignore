@@ -1,0 +1,13 @@
+# Carpetas de compilación de ROS 2
+build/
+install/
+log/
+
+# Archivos temporales y de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos ocultos del sistema operativo
+.DS_Store
+Thumbs.db
