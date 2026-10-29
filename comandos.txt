@@ -6,3 +6,6 @@ ros2 service call /control_dibujo std_srvs/srv/SetBool "{data: true}"
 
 # Para reiniciar la simulación
 ros2 service call /reiniciar_dibujo std_srvs/srv/Trigger {}
+
+#simulacion fisica 
+ros2 run rviz2 rviz2 -d src/g15\_prii3\_move\_turtlebot/rviz/lidar\_jetbot.rviz
