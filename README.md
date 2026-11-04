@@ -69,6 +69,8 @@ PRII3-G15/
     │   │   └─── number_one.py
     │   ├───launch
     │   │   └─── launch.py
+    │   ├───models
+    │   │   └─── cubo.sdf
     │   ├───package.xml
     │   ├───resource
     │   │   └─── g15_prii3_move_turtlebot
@@ -212,7 +214,8 @@ Para verificar el funcionamiento del nodo `collision_avoidance`, en lugar de hac
 
 1. **Aparecer el obstáculo (El robot debe detenerse):**
 ```bash
-ros2 run gazebo_ros spawn_entity.py -entity cubo -file ~/Documents/ProyectosIII/cubo.sdf -x -1.0 -y -0.8 -z 0.0
+# Asegúrate de estar ejecutando esto desde la raíz del workspace (PRII3-G15)
+ros2 run gazebo_ros spawn_entity.py -entity cubo -file src/g15_prii3_move_turtlebot/models/cubo.sdf -x -1.0 -y -0.8 -z 0.0
 ```
 *En RViz observarás cómo el láser detecta la silueta del cubo. Al estar a menos de 0.5m en el cono frontal, el robot se detendrá de forma segura.*
 
