@@ -21,7 +21,7 @@ def get_moves_for_one():
         # Avanza 0.5m para salir del punto de aparición
         {"lineal": 0.2, "angular": 0.0, "duracion": 2.5}, 
         # Gira 90 grados a la izquierda para mirar hacia arriba
-        {"lineal": 0.0, "angular": 0.5, "duracion": 3.14},
+        {"lineal": 0.0, "angular": 0.91, "duracion": 1.73},
         # Pausa de 1 segundo (velocidad 0) antes de empezar
         {"lineal": 0.0, "angular": 0.0, "duracion": 1.0},
         # --- DIBUJO DEL "1" ---
@@ -29,10 +29,10 @@ def get_moves_for_one():
         {"lineal": 0.2, "angular": 0.0, "duracion": 5.0}, 
         # Posicionarse para empezar el "5"
         # Giro 90 grados a la derecha
-        {"lineal": 0.0, "angular": -0.5, "duracion": 3.14}, 
+        {"lineal": 0.0, "angular": -0.91, "duracion": 1.73}, 
         # Avanza 1 metro hacia la derecha (espacio entre el 1 y el 5)
         {"lineal": 0.2, "angular": 0.0, "duracion": 5.0}, 
         # Giro 180 grados para empezar el cinco de derecha a izquierda
-        {"lineal": 0.0, "angular": -0.5, "duracion": 6.28},
+        {"lineal": 0.0, "angular": -0.91, "duracion": 3.45},
     ]
     return dibujar_1

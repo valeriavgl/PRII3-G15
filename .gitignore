@@ -1,13 +1,14 @@
-# Carpetas de compilación de ROS 2
+# Carpetas de compilación de ROS 2 (Colcon)
 build/
 install/
 log/
 
-# Archivos temporales y de caché de Python
+# Archivos temporales y cachés de Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 
-# Archivos ocultos del sistema operativo
+# Configuraciones de editores de código y SO
+.vscode/
+.idea/
 .DS_Store
-Thumbs.db
