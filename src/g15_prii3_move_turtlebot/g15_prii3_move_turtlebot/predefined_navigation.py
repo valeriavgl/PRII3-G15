@@ -27,7 +27,7 @@ class AutonomousNavigation(Node):
         self.declare_parameter('puerta_y', -4.2)
         self.declare_parameter('puerta_yaw', 1.57)
 
-        #  poses finales prueba  distintas según los 3 ArUco 
+        #  poses finales prueba  distintas de los 3 ArUco 
         self.declare_parameter('id_aruco_1', 5)
         self.declare_parameter('dest1_x', 1.2)
         self.declare_parameter('dest1_y', -3.3)
@@ -208,8 +208,8 @@ def main(args=None):
         nodo.navigator.cancelTask()
     finally:
         nodo.destroy_node()
-        rclpy.shutdown()
-
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
