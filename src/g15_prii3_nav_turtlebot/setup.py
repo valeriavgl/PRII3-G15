@@ -19,7 +19,7 @@ setup(
     zip_safe=True,
     maintainer='alexa',
     maintainer_email='avmilvil@epsa.upv.es',
-    description='TODO: Package description',
+    description='Navegacion autonoma y deteccion ArUco para TurtleBot3 en F1L3',
     license='TODO: License declaration',
     extras_require={
         'test': [
@@ -28,6 +28,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'predefined_navigation = g15_prii3_nav_turtlebot.predefined_navigation:main',
+            'autonomous_navigation = g15_prii3_nav_turtlebot.autonomous_navigation:main',
+            'aruco_detector = g15_prii3_nav_turtlebot.aruco_detector:main',
         ],
     },
 )

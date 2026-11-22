@@ -15,12 +15,11 @@ from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 class AutonomousNavigation(Node):
     def __init__(self):
         super().__init__('autonomous_navigation')
-
       
         # ZONA DE CONFIGURACION
         self.declare_parameter('topic_camara', '/camera/image_raw')
         self.declare_parameter('topic_aruco', '/aruco_detections')
-        self.declare_parameter('usar_topico_texto', False)
+        self.declare_parameter('usar_topicoclaro_texto', False)
 
         # Pose intermedia en la puerta del laboratorio 
         self.declare_parameter('puerta_x', -2.0)
