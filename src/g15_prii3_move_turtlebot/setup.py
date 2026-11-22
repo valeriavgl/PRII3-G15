@@ -29,6 +29,8 @@ setup(
         'console_scripts': [
         	'draw_number = g15_prii3_move_turtlebot.draw_number:main' , 
             'collision_avoidance = g15_prii3_move_turtlebot.collision_avoidance:main',
+		'predefined_navigation = g15_prii3_move_turtlebot.predefined_navigation:main',
+            'autonomous_navigation = g15_prii3_move_turtlebot.autonomous_navigation:main',
         ],              
     },
 )
