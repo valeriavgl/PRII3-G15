@@ -14,7 +14,7 @@ class ArucoDetector(Node):
         self.declare_parameter('topic_camara', '/camera/image_raw')
         self.declare_parameter('topic_salida', '/aruco_detections')    
         self.declare_parameter('topic_debug', '/aruco_debug')          
-        self.declare_parameter('periodo_publicacion', 0.5)             
+        self.declare_parameter('periodo_publicacion', 0.1)             
 
         self.bridge = CvBridge()              
 
@@ -34,7 +34,7 @@ class ArucoDetector(Node):
         # Suscriptor:
         topic_camara = self.get_parameter('topic_camara').value
         self.sub_imagen = self.create_subscription(
-            Image, topic_camara, self.callback_imagen, 10
+            Image, topic_camara, self.callback_imagen, 1
         )
 
         # Publicadores
@@ -42,7 +42,7 @@ class ArucoDetector(Node):
             String, self.get_parameter('topic_salida').value, 10
         )
         self.pub_debug = self.create_publisher(
-            Image, self.get_parameter('topic_debug').value, 10
+            Image, self.get_parameter('topic_debug').value, 1
         )
 
         self.ultimo_envio = 0.0               
@@ -68,9 +68,9 @@ class ArucoDetector(Node):
                     self.pub_ids.publish(texto)                               
                     self.get_logger().info(f'ArUco detectado: {lista_ids}')
 
-            salida = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')        
-            salida.header = msg.header                                        
-            self.pub_debug.publish(salida)                                    
+                salida = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')        
+                salida.header = msg.header                                        
+                self.pub_debug.publish(salida)                                    
         except Exception as e:                                                
             self.get_logger().error(f'Error procesando imagen: {e}')
 

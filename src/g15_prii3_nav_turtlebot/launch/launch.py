@@ -54,7 +54,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': True,
-            'usar_topic_texto': True,
+            'usar_topico_texto': True,
         }],
     )
 

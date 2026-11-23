@@ -84,7 +84,7 @@ class AutonomousNavigation(Node):
         self.frames_recibidos = 0
         self.ultimo_id_manual = None
 
-        self.timer = self.create_timer(0.5, self.callback_maquina_estados)
+        self.timer = self.create_timer(0.1, self.callback_maquina_estados)
         self.get_logger().info('Nodo autonomous_navigation inicializado correctamente.')
 
     def crear_pose_stamped(self, x: float, y: float, yaw: float) -> PoseStamped:
