@@ -48,7 +48,7 @@ class AutonomousNavigation(Node):
             String, topic_aruco, self.callback_aruco, 10
         )
 
-        # Estados secuenciales: IR_PUERTA -> LEER_ARUCO -> IR_DESTINO -> FIN
+        # Estados secuenciales: 
         self.estado = 'IR_PUERTA'
         self.meta_enviada = False
         self.nav2_listo = False

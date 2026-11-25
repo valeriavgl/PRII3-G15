@@ -47,7 +47,7 @@ class ArucoDetector(Node):
                 f'No se pudo cargar calibracion desde {calib_path}. Se continuara sin rectificacion.'
             )
 
-        diccionario = aruco.getPredefinedDictionary(aruco.DICT_4X4_100)
+        diccionario = aruco.getPredefinedDictionary(aruco.DICT_5X5_100)
         if hasattr(aruco, 'ArucoDetector'):
             self._detector = aruco.ArucoDetector(diccionario, aruco.DetectorParameters())
             self._detectar = lambda gray: self._detector.detectMarkers(gray)
@@ -58,8 +58,7 @@ class ArucoDetector(Node):
             )
 
         self.obj_points = (
-            np.array([[-1, 1, 0], [1, 1, 0], [1, -1, 0], [-1, -1, 0]], dtype=np.float32)
-            * (self.marker_size / 2.0)
+            np.array([[-1, 1, 0], [1, 1, 0], [1, -1, 0], [-1, -1, 0]], dtype=np.float32) * (self.marker_size / 2.0)
         )
 
         self.text = ""
