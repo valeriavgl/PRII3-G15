@@ -1,10 +1,8 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition, UnlessCondition
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 
 
@@ -22,13 +20,16 @@ def generate_launch_description():
     if not os.path.exists(params_file):
         params_file = os.path.join(pkg_tb3_nav2, 'param', f'{tb3_model}.yaml')
 
-    # Abre Gazebo con el mundo del laboratorio F1L3
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gazebo_launch)
     )
 
+<<<<<<< HEAD
     # Arranca Nav2 + RViz2 con el mapa del laboratorio F1L3
     nav2 = IncludeLaunchDescription(
+=======
+    nav2_cmd = IncludeLaunchDescription(
+>>>>>>> origin/Marley
         PythonLaunchDescriptionSource(nav2_launch),
         launch_arguments={
             'use_sim_time': 'True',
@@ -37,7 +38,6 @@ def generate_launch_description():
         }.items(),
     )
 
-    # Nodo detector de codigos ArUco
     aruco_node = Node(
         package='g15_prii3_nav_turtlebot',
         executable='aruco_detector',
@@ -46,15 +46,18 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    # Nodo de navegacion autonoma
     autonomous_nav_node = Node(
         package='g15_prii3_nav_turtlebot',
         executable='autonomous_navigation',
         name='autonomous_navigation',
         output='screen',
+<<<<<<< HEAD
         parameters=[{
             'use_sim_time': True,
         }],
+=======
+        parameters=[{'use_sim_time': True}],
+>>>>>>> origin/Marley
     )
 
     return LaunchDescription([

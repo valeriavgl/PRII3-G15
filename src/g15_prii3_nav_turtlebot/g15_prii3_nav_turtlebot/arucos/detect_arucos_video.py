@@ -32,7 +32,7 @@ def extract_yml(path_doc):
 class ArucoDetector(Node):
     def __init__(self):
         super().__init__('aruco_detector')
-        self.bridge = CvBridge()
+        self.bridge = CvBridge() #libreria para traducir de ROs2 a opencv 
 
         # Parámetros configurables
         #tópico del que se reciben las imágenes de la cámara
@@ -58,6 +58,7 @@ class ArucoDetector(Node):
         # Configurar la deteccion de ArUcos (DICT_4X4_100)
         diccionario = aruco.getPredefinedDictionary(aruco.DICT_5X5_100)
         self.detector = aruco.ArucoDetector(diccionario, aruco.DetectorParameters())
+        # Coordenadas 3D locales de las esquinas del ArUco (tomando el centro como origen), multiplicado por el tamaño del aruco para escalar las coordenadas
         self.obj_points = np.array([[-1, 1, 0], [1, 1, 0], [1, -1, 0], [-1, -1, 0]], dtype=np.float32) * (self.marker_size/ 2.0)
 
         # Texto con los últimos ArUcos detectados
@@ -82,7 +83,7 @@ class ArucoDetector(Node):
         if ids is not None:
             # Recorre cada marcador encontrado individualmente para calcular su posición 3D.
             for i in range(len(ids)):
-            # solvePnP: Calcula la rotación (rvec) y la distancia/posición (tvec) del marcador.
+            # solvePnP: Calcula la rotación (rvec) y (tvec) la distancia/posición  del marcador.
                 _, rvec, tvec = cv.solvePnP(self.obj_points, corners[i][0], self.cameraMatrix, None)
                 id_aruco = ids[i][0]
                 x, y, z = tvec[0][0], tvec[1][0], tvec[2][0]

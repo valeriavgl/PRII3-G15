@@ -1,92 +1,166 @@
-#!/usr/bin/env python3
-import cv2                                    
-import rclpy                                  
-from rclpy.node import Node                   
-from sensor_msgs.msg import Image             
-from std_msgs.msg import String               
-from cv_bridge import CvBridge                
+import cv2 as cv
+import cv2.aruco as aruco
+import numpy as np
+import rclpy
+
+from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+from sensor_msgs.msg import Image, CameraInfo
+from std_msgs.msg import String
+from cv_bridge import CvBridge
+
+
+# Configuracion inicial
+CALIB_PATH = "/home/nmquiana/Documents/Proyecto3/PRII3-G15/camera/calibration/calibracion_camara.yml"
+MARKER_SIZE = 0.1  # metros
+
+
+def extract_yml(path_doc):
+    p_file = cv.FileStorage(path_doc, cv.FILE_STORAGE_READ)
+
+    if not p_file.isOpened():
+        return None, None
+
+    cameraMatrix = p_file.getNode("cameraMatrix").mat()
+    distCoeffs = p_file.getNode("distCoeffs").mat()
+    p_file.release()
+
+    return cameraMatrix, distCoeffs
 
 
 class ArucoDetector(Node):
+
     def __init__(self):
-        super().__init__('aruco_detector')    
+        super().__init__('aruco_detector')
+        self.bridge = CvBridge()
 
+        # Parametros configurables
         self.declare_parameter('topic_camara', '/camera/image_raw')
-        self.declare_parameter('topic_salida', '/aruco_detections')    
-        self.declare_parameter('topic_debug', '/aruco_debug')          
-        self.declare_parameter('periodo_publicacion', 0.1)             
+        self.declare_parameter('topic_salida', '/arucos')
+        self.declare_parameter('periodo', 0.5)
+        self.declare_parameter('calib_path', CALIB_PATH)
+        self.declare_parameter('marker_size', MARKER_SIZE)
+        self.declare_parameter('dictionary', 'DICT_5X5_100')
+        self.declare_parameter('usar_camera_info', True)
 
-        self.bridge = CvBridge()              
-
-        # Detector con el diccionario
-        self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_100)
-        if hasattr(cv2.aruco, 'ArucoDetector'):       
-            self._aruco_detector = cv2.aruco.ArucoDetector(
-                self.aruco_dict, cv2.aruco.DetectorParameters()
-            )
-            self._detectar_aruco = lambda gray: self._aruco_detector.detectMarkers(gray)
-        else:                                         
-            self._aruco_params = cv2.aruco.DetectorParameters_create()
-            self._detectar_aruco = lambda gray: cv2.aruco.detectMarkers(
-                gray, self.aruco_dict, parameters=self._aruco_params
-            )
-
-        # Suscriptor:
         topic_camara = self.get_parameter('topic_camara').value
-        self.sub_imagen = self.create_subscription(
-            Image, topic_camara, self.callback_imagen, 1
+        topic_salida = self.get_parameter('topic_salida').value
+        periodo = float(self.get_parameter('periodo').value)
+        calib_path = self.get_parameter('calib_path').value
+        self.marker_size = float(self.get_parameter('marker_size').value)
+        dict_name = self.get_parameter('dictionary').value
+        self.usar_camera_info = self.get_parameter('usar_camera_info').value
+
+        # Calibracion de la camara
+        self.cameraMatrix = None
+        self.distCoeffs = None
+
+        if self.usar_camera_info:
+            self.create_subscription(
+                CameraInfo, '/camera/camera_info',
+                self.callback_camera_info, qos_profile_sensor_data
+            )
+        else:
+            self.cameraMatrix, self.distCoeffs = extract_yml(calib_path)
+
+            if self.cameraMatrix is None:
+                self.get_logger().error('No se pudo cargar la calibracion YAML.')
+
+        # Configuracion del diccionario ArUco
+        diccionario = aruco.getPredefinedDictionary(
+            getattr(aruco, dict_name)
         )
 
-        # Publicadores
-        self.pub_ids = self.create_publisher(
-            String, self.get_parameter('topic_salida').value, 10
+        if hasattr(aruco, 'ArucoDetector') and hasattr(aruco, 'DetectorParameters'):
+            params = aruco.DetectorParameters()
+            detector = aruco.ArucoDetector(diccionario, params)
+            self.detector = lambda img: detector.detectMarkers(img)
+        else:
+            params = aruco.DetectorParameters_create()
+            self.detector = lambda img: aruco.detectMarkers(
+                img, diccionario, parameters=params
+            )
+
+        # Esquinas 3D del marcador
+        self.obj_points = np.array(
+            [[-1, 1, 0], [1, 1, 0],
+             [1, -1, 0], [-1, -1, 0]],
+            dtype=np.float32
+        ) * (self.marker_size / 2.0)
+
+        self.text = ""
+
+        # Suscripcion, publicador y temporizador
+        self.create_subscription(
+            Image, topic_camara, self.callback_imagen,
+            qos_profile_sensor_data
         )
-        self.pub_debug = self.create_publisher(
-            Image, self.get_parameter('topic_debug').value, 1
+        self.pub = self.create_publisher(String, topic_salida, 10)
+        self.create_timer(periodo, self.callback_topico_aruco)
+
+        self.get_logger().info(
+            f'Escuchando {topic_camara} y publicando en {topic_salida}'
         )
 
-        self.ultimo_envio = 0.0               
-        self.get_logger().info('Nodo aruco_detector listo. Esperando imagenes de la camara...')
+    def callback_camera_info(self, msg):
+        self.cameraMatrix = np.array(msg.k).reshape(3, 3)
+        self.distCoeffs = np.array(msg.d)
 
-    #  CALLBACK 
-    def callback_imagen(self, msg: Image):
-        try:
-            frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')   
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)                   
-            esquinas, ids, _ = self._detectar_aruco(gray)                     
+    def callback_imagen(self, msg):
+        image = self.bridge.imgmsg_to_cv2(
+            msg, desired_encoding='bgr8'
+        )
 
-            if ids is not None:                                               
-                cv2.aruco.drawDetectedMarkers(frame, esquinas, ids)           
-                lista_ids = [int(i) for i in ids.flatten()]                   
+        # Conversion a escala de grises
+        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-                ahora = self.get_clock().now().nanoseconds / 1e9              
-                periodo = float(self.get_parameter('periodo_publicacion').value)
-                if ahora - self.ultimo_envio >= periodo:                      
-                    self.ultimo_envio = ahora
-                    texto = String()
-                    texto.data = ','.join(str(i) for i in lista_ids)          
-                    self.pub_ids.publish(texto)                               
-                    self.get_logger().info(f'ArUco detectado: {lista_ids}')
+        # Deteccion de ArUcos
+        corners, ids, _ = self.detector(gray)
 
-                salida = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')        
-                salida.header = msg.header                                        
-                self.pub_debug.publish(salida)                                    
-        except Exception as e:                                                
-            self.get_logger().error(f'Error procesando imagen: {e}')
+        detectados = []
 
+        if ids is not None:
+            if self.cameraMatrix is None or self.distCoeffs is None:
+                self.text = ""
+                return
+
+            for i in range(len(ids)):
+                resultado, rvec, tvec = cv.solvePnP(
+                    self.obj_points,
+                    corners[i][0],
+                    self.cameraMatrix,
+                    self.distCoeffs
+                )
+
+                if resultado:
+                    id_aruco = int(ids[i][0])
+                    x, y, z = tvec.flatten()
+
+                    detectados.append(
+                        f"ID:{id_aruco} (X:{x:.2f}, Y:{y:.2f}, Z:{z:.2f})"
+                    )
+
+        self.text = " | ".join(detectados)
+
+    def callback_topico_aruco(self):
+        msg = String()
+        msg.data = self.text
+        self.pub.publish(msg)
 
 
 def main(args=None):
-    rclpy.init(args=args)                       
-    nodo = ArucoDetector()                      
+    rclpy.init(args=args)
+    nodo = ArucoDetector()
+
     try:
-        rclpy.spin(nodo)                        
-    except KeyboardInterrupt:                   
+        rclpy.spin(nodo)
+    except KeyboardInterrupt:
         pass
     finally:
-        nodo.destroy_node()                     
-        rclpy.shutdown()                        
+        nodo.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
