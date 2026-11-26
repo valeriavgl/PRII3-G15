@@ -24,12 +24,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(gazebo_launch)
     )
 
-<<<<<<< HEAD
-    # Arranca Nav2 + RViz2 con el mapa del laboratorio F1L3
-    nav2 = IncludeLaunchDescription(
-=======
     nav2_cmd = IncludeLaunchDescription(
->>>>>>> origin/Marley
         PythonLaunchDescriptionSource(nav2_launch),
         launch_arguments={
             'use_sim_time': 'True',
@@ -51,18 +46,12 @@ def generate_launch_description():
         executable='autonomous_navigation',
         name='autonomous_navigation',
         output='screen',
-<<<<<<< HEAD
-        parameters=[{
-            'use_sim_time': True,
-        }],
-=======
         parameters=[{'use_sim_time': True}],
->>>>>>> origin/Marley
     )
 
     return LaunchDescription([
         gazebo,
-        nav2,
+        nav2_cmd,
         aruco_node,
         autonomous_nav_node,
     ])
