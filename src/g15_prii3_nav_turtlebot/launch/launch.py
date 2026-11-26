@@ -28,7 +28,7 @@ def generate_launch_description():
     )
 
     # Arranca Nav2 + RViz2 con el mapa del laboratorio F1L3
-    nav2_cmd = IncludeLaunchDescription(
+    nav2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nav2_launch),
         launch_arguments={
             'use_sim_time': 'True',
@@ -54,13 +54,12 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': True,
-            'usar_topico_texto': True,
         }],
     )
 
     return LaunchDescription([
         gazebo,
-        nav2_cmd,
+        nav2,
         aruco_node,
         autonomous_nav_node,
     ])
