@@ -14,6 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*')),
         (os.path.join('share', package_name, 'maps'), glob('maps/*')),
+        (os.path.join('share', package_name, 'config'), glob('camera/calibration/*.yml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -28,7 +29,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'predefined_navigation = g15_prii3_nav_turtlebot.predefined_navigation:main',
+            'predefined_navigation = g15_prii3_nav_turtlebot.predefined_nav:main',
             'autonomous_navigation = g15_prii3_nav_turtlebot.autonomous_navigation:main',
             'aruco_detector = g15_prii3_nav_turtlebot.aruco_detector:main',
         ],
