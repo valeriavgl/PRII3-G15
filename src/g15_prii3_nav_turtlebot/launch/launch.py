@@ -41,10 +41,18 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    autonomous_nav_node = Node(
+    """ autonomous_nav_node = Node(
         package='g15_prii3_nav_turtlebot',
         executable='autonomous_navigation',
         name='autonomous_navigation',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    ) """
+
+    predefined_nav_node = Node(
+        package='g15_prii3_nav_turtlebot',
+        executable='predefined_navigation',
+        name='predefined_navigation',
         output='screen',
         parameters=[{'use_sim_time': True}],
     )
@@ -53,5 +61,5 @@ def generate_launch_description():
         gazebo,
         nav2_cmd,
         aruco_node,
-        autonomous_nav_node,
+        predefined_nav_node,
     ])

@@ -5,7 +5,7 @@ from geometry_msgs.msg import PoseStamped
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 
 # (x, y, angulo_en_grados)
-pos_inicial = (-3.76, -12.53, 0)     # Pasillo 
+pos_inicial = (-2.06, -11.79, 0)     # Pasillo 
 pos_final = (-0.22, 2.00, 90)     # Laboratorio 
 
 class PredefinedNavigation(Node):
